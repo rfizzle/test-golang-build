@@ -29,33 +29,33 @@ jobs:
   build:
     name: Build
     runs-on: ${{ matrix.os }}
-      strategy:
-        matrix:
-          os: [windows-latest, ubuntu-latest, macos-latest]
-          arch: ['386', amd64]
-          # We sometimes use different verbiage for things (e.g. "darwin"
-          # for the GOOS build flag and "osx" in the actual release ZIP).
-          # We need to specify those here.
-          include:
-            - os: windows-latest
-              goos: windows
-              bin: 'app.exe'
-              releaseos: windows
-            - os: ubuntu-latest
-              goos: linux
-              bin: 'app'
-              releaseos: linux
-            - os: macos-latest
-              goos: darwin
-              bin: 'app'
-              releaseos: osx
-          # Don't build windows-32bit due to missing MinGW dependencies
-          # Don't build osx-32bit due to eventual drop in Go support
-          exclude:
-            - os: windows-latest
-              arch: '386'
-            - os: macos-latest
-              arch: '386'
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest, macos-latest]
+        arch: ['386', amd64]
+        # We sometimes use different verbiage for things (e.g. "darwin"
+        # for the GOOS build flag and "osx" in the actual release ZIP).
+        # We need to specify those here.
+        include:
+          - os: windows-latest
+            goos: windows
+            bin: 'app.exe'
+            releaseos: windows
+          - os: ubuntu-latest
+            goos: linux
+            bin: 'app'
+            releaseos: linux
+          - os: macos-latest
+            goos: darwin
+            bin: 'app'
+            releaseos: osx
+        # Don't build windows-32bit due to missing MinGW dependencies
+        # Don't build osx-32bit due to eventual drop in Go support
+        exclude:
+          - os: windows-latest
+            arch: '386'
+          - os: macos-latest
+            arch: '386'
     steps:
       - name: Set up Go
         uses: actions/setup-go@v2
