@@ -6,9 +6,9 @@ name: Release
 # events but only for the master branch
 on:
   push:
-    branches: [ v* ]
+    branches: [ release ]
   pull_request:
-    branches: [ v* ]
+    branches: [ release ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -42,10 +42,6 @@ jobs:
       - name: Bundle release package
         run: |
           zip --junk-paths app app README.md LICENSE
-      - name: Get the current branch name
-        shell: bash
-        run: echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
-        id: get_branch
       - name: Conventional Changelog Action
         id: changelog
         uses: TriPSs/conventional-changelog-action@v3
@@ -64,8 +60,8 @@ jobs:
           body: ${{ steps.changelog.outputs.clean_changelog }}
           draft: false
           prerelease: false
-      - name: Upload Release Asset
-        id: upload-release-asset
+      - name: Upload Release
+        id: upload_release
         uses: actions/upload-release-asset@v1
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
         env:
@@ -75,3 +71,11 @@ jobs:
           asset_path: ./app.zip
           asset_name: app.zip
           asset_content_type: application/zip
+      - name: Build and push Docker images
+        uses: docker/build-push-action@v1
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+          repository: rfizzle/test-golang-build
+          tags: latest,${{ steps.changelog.outputs.tag }}
