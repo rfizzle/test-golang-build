@@ -115,6 +115,7 @@ jobs:
           tags: latest,${{ steps.changelog.outputs.tag }}
       - name: Push changes
         uses: ad-m/github-push-action@master
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
         with:
           github_token: ${{ secrets.ADMIN_TOKEN }}
       - name: Download built binary
@@ -122,6 +123,7 @@ jobs:
         with:
           path: bin
       - name: Package Releases
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
         run: |
           mkdir releases;
           for RELEASE_DIR in bin/*
@@ -138,6 +140,7 @@ jobs:
             done
           done
       - name: Upload Archives to Release
+        if: ${{ steps.changelog.outputs.skipped == 'false' }}
         env:
           UPLOAD_URL: ${{ steps.create_release.outputs.upload_url }}
           API_HEADER: "Accept: application/vnd.github.v3+json"
