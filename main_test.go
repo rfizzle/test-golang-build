@@ -1,4 +1,4 @@
-package test_golang_build
+package main
 
 import "testing"
 
