@@ -52,9 +52,7 @@ jobs:
       - if: matrix.os == 'ubuntu-latest'
         run: sudo apt-get update && sudo apt-get install -y gcc-multilib
       - if: matrix.releaseos == 'windows'
-        run: echo "::set-env name=RELEASE::app-${{ matrix.releaseos}}.exe"
-      - if: matrix.releaseos != 'windows'
-        run: echo "::set-env name=RELEASE::app-${{ matrix.releaseos}}"
+        run: echo "::set-env name=RELEASE::${{ matrix.releaseos }}-${{ matrix.arch }}"
       - uses: actions/checkout@v2
       - name: Build ${{ matrix.goos }}/${{ matrix.arch }}
         run: go build -o ${{ matrix.bin }}
