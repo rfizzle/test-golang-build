@@ -1,6 +1,6 @@
 # This is a basic workflow to help you get started with Actions
 
-name: Release Pull Request
+name: release pull request
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events but only for the master branch
@@ -10,12 +10,8 @@ on:
 
 jobs:
   validate:
-    name: Validate Correct Source
+    name: validate source branch
     runs-on: ubuntu-latest
     steps:
-      - name: Dump GitHub context
-        env:
-          GITHUB_CONTEXT: ${{ toJson(github) }}
-        run: |
-          echo "$GITHUB_CONTEXT"
-          echo ${{ github.event.pull_request.title }}
+      - name: check if pull source is master branch
+        run: echo ${{ github.head_ref }} | [[ $(</dev/stdin) == "master" ]]

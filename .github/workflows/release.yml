@@ -40,11 +40,26 @@ jobs:
       - name: Bundle release package
         run: |
           zip --junk-paths app app README.md LICENSE
+      - name: Import GPG key
+        id: import_gpg
+        uses: crazy-max/ghaction-import-gpg@v2
+        with:
+          git_user_signingkey: true
+          git_commit_gpgsign: true
+          git_tag_gpgsign: true
+          git_push_gpgsign: true
+          git_committer_email: automations@thoronic.com
+          git_committer_name: Automations
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          PASSPHRASE: ${{ secrets.GPG_PASSWORD }}
       - name: Conventional Changelog Action
         id: changelog
         uses: TriPSs/conventional-changelog-action@v3
         with:
           github-token: ${{ secrets.github_token }}
+          git-user-name: Automations
+          git-user-email: automations@thoronic.com
           skip-on-empty: 'true'
       - name: Create Release
         id: create_release
