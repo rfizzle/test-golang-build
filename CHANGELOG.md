@@ -1,4 +1,35 @@
-# 0.6.0 (2020-08-08)
+# [0.7.0](https://github.com/rfizzle/test-golang-build/compare/v0.6.0...v0.7.0) (2020-08-08)
+
+
+### Bug Fixes
+
+* fixed invalid json in package.json ([5b299b1](https://github.com/rfizzle/test-golang-build/commit/5b299b154031f9e87c5c6abbe202f2cbb433885c))
+
+
+### Features
+
+* added additional info in package.json ([9ebcab1](https://github.com/rfizzle/test-golang-build/commit/9ebcab1a8803cdefe9197c3b523ba6eec0aee458))
+
+
+
+# [0.6.0](https://github.com/rfizzle/test-golang-build/compare/v0.5.0...v0.6.0) (2020-08-08)
+
+
+### Bug Fixes
+
+* updated to use admin token for conventional changelog ([34d0d76](https://github.com/rfizzle/test-golang-build/commit/34d0d76e27eb671cf9c6816748fb90c7784f0cd7))
+
+
+
+# [0.5.0](https://github.com/rfizzle/test-golang-build/compare/v0.4.0...v0.5.0) (2020-08-08)
+
+
+
+# [0.4.0](https://github.com/rfizzle/test-golang-build/compare/v0.3.0...v0.4.0) (2020-08-08)
+
+
+
+# [0.3.0](https://github.com/rfizzle/test-golang-build/compare/2a06e813bd9223c322d44ebb55dc7f6bc798d049...v0.3.0) (2020-08-08)
 
 
 ### Bug Fixes
@@ -11,7 +42,6 @@
 * fixed release name to use branch ([c5da667](https://github.com/rfizzle/test-golang-build/commit/c5da667b1c2247da2d667a8f0b7f36472e11df29))
 * fixed some syntax issues in github action workflow ([c3836ec](https://github.com/rfizzle/test-golang-build/commit/c3836ec740c293598e6e037b4c13eae50d00dd9f))
 * fixed syntax error in release workflow ([e2f0fa7](https://github.com/rfizzle/test-golang-build/commit/e2f0fa79f287294ca252f22e3a01178cc38e4873))
-* updated to use admin token for conventional changelog ([34d0d76](https://github.com/rfizzle/test-golang-build/commit/34d0d76e27eb671cf9c6816748fb90c7784f0cd7))
 * updated workflow yaml file ([aa4637a](https://github.com/rfizzle/test-golang-build/commit/aa4637a550eeef94c8bc20f7419690248aac5d4c))
 
 
