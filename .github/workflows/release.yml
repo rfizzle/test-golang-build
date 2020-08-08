@@ -89,7 +89,7 @@ jobs:
         id: changelog
         uses: TriPSs/conventional-changelog-action@v3
         with:
-          github-token: ${{ secrets.github_token }}
+          github-token: ${{ secrets.ADMIN_TOKEN }}
           git-user-name: Automations
           git-user-email: automations@thoronic.com
           skip-on-empty: 'true'
