@@ -10,8 +10,8 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  build:
-    name: Test and Build Application
+  test:
+    name: Test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -26,6 +26,59 @@ jobs:
         with:
           name: binary
           path: app
+  build:
+    name: Build
+    runs-on: ${{ matrix.os }}
+      strategy:
+        matrix:
+          os: [windows-latest, ubuntu-latest, macos-latest]
+          arch: ['386', amd64]
+          # We sometimes use different verbiage for things (e.g. "darwin"
+          # for the GOOS build flag and "osx" in the actual release ZIP).
+          # We need to specify those here.
+          include:
+            - os: windows-latest
+              goos: windows
+              bin: 'app.exe'
+              releaseos: windows
+            - os: ubuntu-latest
+              goos: linux
+              bin: 'app'
+              releaseos: linux
+            - os: macos-latest
+              goos: darwin
+              bin: 'app'
+              releaseos: osx
+          # Don't build windows-32bit due to missing MinGW dependencies
+          # Don't build osx-32bit due to eventual drop in Go support
+          exclude:
+            - os: windows-latest
+              arch: '386'
+            - os: macos-latest
+              arch: '386'
+    steps:
+      - name: Set up Go
+        uses: actions/setup-go@v2
+        with:
+          go-version: '^1.13.1'
+      - if: matrix.os == 'ubuntu-latest'
+        run: sudo apt-get update && sudo apt-get install -y gcc-multilib
+      - if: matrix.arch == '386'
+        run: echo "::set-env name=RELEASE::app-${{ github.event.release.tag_name }}-${{ matrix.releaseos}}-32bit"
+      - if: matrix.arch == 'amd64'
+        run: echo "::set-env name=RELEASE::app-${{ github.event.release.tag_name}}-${{ matrix.releaseos}}-64bit"
+      - uses: actions/checkout@v2
+      - name: Build ${{ matrix.goos }}/${{ matrix.arch }}
+        run: go build -o ${{ matrix.bin }}
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.arch }}
+          CGO_ENABLED: 1
+      - name: Upload to artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: ${{ env.RELEASE }}
+          path: ${{ matrix.bin }}
   release:
     name: Create Release
     runs-on: ubuntu-latest
@@ -33,13 +86,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Download built binary
-        uses: actions/download-artifact@v2
-        with:
-          name: binary
-      - name: Bundle release package
-        run: |
-          zip --junk-paths app app README.md LICENSE
       - name: Import GPG key
         id: import_gpg
         uses: crazy-max/ghaction-import-gpg@v2
@@ -72,17 +118,6 @@ jobs:
           body: ${{ steps.changelog.outputs.clean_changelog }}
           draft: false
           prerelease: false
-      - name: Upload Release
-        id: upload_release
-        uses: actions/upload-release-asset@v1
-        if: ${{ steps.changelog.outputs.skipped == 'false' }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps
-          asset_path: ./app.zip
-          asset_name: app.zip
-          asset_content_type: application/zip
       - name: Build and push Docker images
         uses: docker/build-push-action@v1
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
@@ -91,6 +126,43 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: rfizzle/test-golang-build
           tags: latest,${{ steps.changelog.outputs.tag }}
+      - name: Download built binary
+          uses: actions/download-artifact@v2
+          with:
+            name: bin
+      - name: Package Releases
+        run: |
+          mkdir releases;
+          for RELEASE_DIR in bin/*
+          do
+            echo "Creating release $RELEASE_DIR"
+            for BINARY in $RELEASE_DIR/*
+            do
+              cp $BINARY .;
+              zip -r releases/$(basename $RELEASE_DIR).zip \
+                $(basename ${BINARY}) \
+                README.md \
+                LICENSE;
+              rm $BINARY;
+            done
+          done
+      - name: Upload Archives to Release
+        env:
+          UPLOAD_URL: ${{ steps.create_release.outputs.upload_url }}
+          API_HEADER: "Accept: application/vnd.github.v3+json"
+          AUTH_HEADER: "Authorization: token ${{ secrets.GITHUB_TOKEN }}"
+        run: |
+          UPLOAD_URL=$(echo -n $UPLOAD_URL | sed s/\{.*//g)
+          for FILE in releases/*
+          do
+            echo "Uploading ${FILE}";
+            curl \
+              -H "${API_HEADER}" \
+              -H "${AUTH_HEADER}" \
+              -H "Content-Type: $(file -b --mime-type ${FILE})" \
+              --data-binary "@${FILE}" \
+              "${UPLOAD_URL}?name=$(basename ${FILE})";
+          done
       - name: Push changes
         uses: ad-m/github-push-action@master
         with:
