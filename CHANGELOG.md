@@ -1,4 +1,4 @@
-# 0.5.0 (2020-08-08)
+# 0.6.0 (2020-08-08)
 
 
 ### Bug Fixes
@@ -11,6 +11,7 @@
 * fixed release name to use branch ([c5da667](https://github.com/rfizzle/test-golang-build/commit/c5da667b1c2247da2d667a8f0b7f36472e11df29))
 * fixed some syntax issues in github action workflow ([c3836ec](https://github.com/rfizzle/test-golang-build/commit/c3836ec740c293598e6e037b4c13eae50d00dd9f))
 * fixed syntax error in release workflow ([e2f0fa7](https://github.com/rfizzle/test-golang-build/commit/e2f0fa79f287294ca252f22e3a01178cc38e4873))
+* updated to use admin token for conventional changelog ([34d0d76](https://github.com/rfizzle/test-golang-build/commit/34d0d76e27eb671cf9c6816748fb90c7784f0cd7))
 * updated workflow yaml file ([aa4637a](https://github.com/rfizzle/test-golang-build/commit/aa4637a550eeef94c8bc20f7419690248aac5d4c))
 
 
