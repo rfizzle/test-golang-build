@@ -131,9 +131,9 @@ jobs:
         with:
           github_token: ${{ secrets.ADMIN_TOKEN }}
       - name: Download built binary
-          uses: actions/download-artifact@v2
-          with:
-            name: bin
+        uses: actions/download-artifact@v2
+        with:
+          name: bin
       - name: Package Releases
         run: |
           mkdir releases;
