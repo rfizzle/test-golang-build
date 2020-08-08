@@ -126,6 +126,10 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
           repository: rfizzle/test-golang-build
           tags: latest,${{ steps.changelog.outputs.tag }}
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.ADMIN_TOKEN }}
       - name: Download built binary
           uses: actions/download-artifact@v2
           with:
@@ -163,7 +167,3 @@ jobs:
               --data-binary "@${FILE}" \
               "${UPLOAD_URL}?name=$(basename ${FILE})";
           done
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.ADMIN_TOKEN }}
